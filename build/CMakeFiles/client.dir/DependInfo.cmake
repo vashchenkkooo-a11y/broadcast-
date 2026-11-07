@@ -8,8 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/yasya/Desktop/broadcast-/client/client.cpp" "CMakeFiles/client.dir/client/client.cpp.o" "gcc" "CMakeFiles/client.dir/client/client.cpp.o.d"
   "/home/yasya/Desktop/broadcast-/client/main.cpp" "CMakeFiles/client.dir/client/main.cpp.o" "gcc" "CMakeFiles/client.dir/client/main.cpp.o.d"
+  "/home/yasya/Desktop/broadcast-/client/parser.cpp" "CMakeFiles/client.dir/client/parser.cpp.o" "gcc" "CMakeFiles/client.dir/client/parser.cpp.o.d"
+  "/home/yasya/Desktop/broadcast-/client/serializer.cpp" "CMakeFiles/client.dir/client/serializer.cpp.o" "gcc" "CMakeFiles/client.dir/client/serializer.cpp.o.d"
+  "" "client" "gcc" "CMakeFiles/client.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -11,8 +11,8 @@ add_executable(server
 )
 
 add_executable(client 
-    client/client.cpp
-    client/client.hpp
+    client/serializer.cpp
+    client/parser.cpp
     client/main.cpp)
 
 target_link_libraries(client PRIVATE Boost::json)

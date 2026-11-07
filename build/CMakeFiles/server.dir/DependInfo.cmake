@@ -11,6 +11,7 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/yasya/Desktop/broadcast-/server/main.cpp" "CMakeFiles/server.dir/server/main.cpp.o" "gcc" "CMakeFiles/server.dir/server/main.cpp.o.d"
   "/home/yasya/Desktop/broadcast-/server/tcp_connection.cpp" "CMakeFiles/server.dir/server/tcp_connection.cpp.o" "gcc" "CMakeFiles/server.dir/server/tcp_connection.cpp.o.d"
   "/home/yasya/Desktop/broadcast-/server/tcp_server.cpp" "CMakeFiles/server.dir/server/tcp_server.cpp.o" "gcc" "CMakeFiles/server.dir/server/tcp_server.cpp.o.d"
+  "" "server" "gcc" "CMakeFiles/server.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

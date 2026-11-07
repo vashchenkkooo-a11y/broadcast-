@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/client.dir/client/client.cpp.o CMakeFiles/client.dir/client/main.cpp.o -o client  /usr/lib/x86_64-linux-gnu/libboost_json.so.1.83.0 /usr/lib/x86_64-linux-gnu/libboost_container.so.1.83.0 
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/client.dir/link.d CMakeFiles/client.dir/client/serializer.cpp.o CMakeFiles/client.dir/client/parser.cpp.o CMakeFiles/client.dir/client/main.cpp.o -o client  /usr/lib/x86_64-linux-gnu/libboost_json.so.1.90.0 /usr/lib/x86_64-linux-gnu/libboost_container.so.1.90.0
