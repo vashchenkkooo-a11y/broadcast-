@@ -1,4 +1,0 @@
-/home/yasya/Desktop/broadcast-/build/CMakeFiles/server.dir
-/home/yasya/Desktop/broadcast-/build/CMakeFiles/client.dir
-/home/yasya/Desktop/broadcast-/build/CMakeFiles/edit_cache.dir
-/home/yasya/Desktop/broadcast-/build/CMakeFiles/rebuild_cache.dir
