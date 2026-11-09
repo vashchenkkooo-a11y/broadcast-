@@ -14,6 +14,7 @@ add_executable(server
 )
 
 add_executable(client 
+    client/client.cpp
     client/serializer.cpp
     shared/parser.cpp
     client/main.cpp

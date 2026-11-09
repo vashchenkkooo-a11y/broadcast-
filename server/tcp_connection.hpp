@@ -13,7 +13,7 @@ public:
   static pointer create(boost::asio::io_context& io_context);
   tcp::socket& socket();
   void start();
-  void write(size_t len);
+  void write(const std::string& response);
 
 private:
   tcp_connection(boost::asio::io_context& io_context);
@@ -33,4 +33,5 @@ private:
   std::string message_;
   std::array<char, 512> buf_;
   std::string nickname_;
+  std::string response_; 
 };

@@ -16,8 +16,8 @@ tcp::socket &tcp_connection::socket() {
    return socket_;
 }
 
-   void tcp_connection::write(size_t len) {
-boost::asio::async_write(socket_, boost::asio::buffer(buf_, len),
+   void tcp_connection::write(const std::string& response) {
+boost::asio::async_write(socket_, boost::asio::buffer(response),
         boost::bind(&tcp_connection::handle_write, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred)); }
@@ -33,11 +33,10 @@ boost::asio::async_write(socket_, boost::asio::buffer(buf_, len),
           boost::asio::placeholders::bytes_transferred)); 
   }
 
-  void tcp_connection::handle_read(const boost::system::error_code& error,
-     std::size_t bytes_transferred) {
+  void tcp_connection::handle_read(const boost::system::error_code& error, std::size_t bytes_transferred) {
       if(error) 
       return;
-      buf_[bytes_transferred] = '\0';
+      // buf_[bytes_transferred] = '\0';
       parser parser;
       boost::json::object obj_request;
       obj_request = parser.parse(buf_.data());
@@ -68,40 +67,40 @@ boost::asio::async_write(socket_, boost::asio::buffer(buf_, len),
   void tcp_connection::handle_reg(boost::json::object& data) {
 
     serializer serializer;
-    std::string response;
     
     if(data["login"] == "yasya" )  {
-      response = serializer.make_response(Status::OK, Success_messages::success_reg);
+      response_ = serializer.make_response(Status::OK, Success_messages::success_reg);
       nickname_ = data["login"].as_string();
       
     }
     else 
-      response = serializer.make_response(Status::ERROR, Error_messages::error_reg);
-    std::memcpy(buf_.data(), response.data(), response.size());
+      response_ = serializer.make_response(Status::ERROR, Error_messages::error_reg);
+  //   std::memcpy(buf_.data(), response.data(), response.size());
   
-  buf_[response.size()] = '\0';
-  write(response.size());
+  // buf_[response.size()] = '\0';
+  write(response_);
     }
 
 void tcp_connection::handle_auth(boost::json::object& data) {
   serializer serializer;
-  std::string response;
-  response = serializer.make_response(Status::ERROR, Error_messages::error_auth);
-  std::memcpy(buf_.data(), response.data(), response.size());
 
-  buf_[response.size()] = '\0';
-  write(response.size());
+  response_ = serializer.make_response(Status::ERROR, Error_messages::error_auth);
+  // std::memcpy(buf_.data(), response.data(), response.size());
+
+  // buf_[response.size()] = '\0';
+  // write(response.size());
+  write(response_);
 }
 
 void tcp_connection::handle_send(boost::json::object& data) {
   serializer serializer;
-  std::string response;
   if (nickname_.size() == 0 )  {
-    response = serializer.make_response(Status::ERROR, Error_messages::error_send_anonym);
-    std::memcpy(buf_.data(), response.data(), response.size());
+    response_ = serializer.make_response(Status::ERROR, Error_messages::error_send_anonym);
+    // std::memcpy(buf_.data(), response.data(), response.size());
 
-    buf_[response.size()] = '\0';
-    write(response.size());
+    // buf_[response.size()] = '\0';
+    // write(response.size());
+    write(response_);
   }
 }
 
