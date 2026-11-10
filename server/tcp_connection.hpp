@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <map>
 #include <boost/asio.hpp> 
 #include <boost/json.hpp>
 
@@ -10,13 +11,13 @@ class tcp_connection
 {
 public:
   typedef std::shared_ptr<tcp_connection> pointer;
-  static pointer create(boost::asio::io_context& io_context,  std::vector<std::string> &logins);
+  static pointer create(boost::asio::io_context& io_context, std::map<std::string, std::string> &data_);
   tcp::socket& socket();
   void start();
   void write(const std::string& response);
 
 private:
-  tcp_connection(boost::asio::io_context& io_context, std::vector<std::string> &logins);
+  tcp_connection(boost::asio::io_context& io_context, std::map<std::string, std::string> &data_);
   void read();
   void handle_read(const boost::system::error_code& error,
      std::size_t bytes_transferred);
@@ -32,8 +33,8 @@ private:
   tcp::socket socket_;
   std::string message_;
   std::array<char, 512> buf_;
-  std::string login_;
-  std::string password_;
+  std::map<std::string, std::string> &data_;
   std::string response_; 
-  std::vector<std::string> &logins_;
+  std::string login_;
+
 };
