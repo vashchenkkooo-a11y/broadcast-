@@ -19,6 +19,7 @@ add_executable(client
     shared/parser.cpp
     client/main.cpp
     shared/const.hpp 
+    client/auth_service.cpp
     )
 
 

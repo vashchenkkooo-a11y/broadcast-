@@ -9,8 +9,8 @@ void tcp_connection::start() {
   read();
 }
 
-tcp_connection::pointer tcp_connection::create(boost::asio::io_context& io_context) {
-  return pointer(new tcp_connection(io_context)); 
+tcp_connection::pointer tcp_connection::create(boost::asio::io_context& io_context, std::vector<std::string> &logins) {
+  return pointer(new tcp_connection(io_context, logins));
 }
 tcp::socket &tcp_connection::socket() {
    return socket_;
@@ -22,8 +22,8 @@ boost::asio::async_write(socket_, boost::asio::buffer(response),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred)); }
 
-  tcp_connection::tcp_connection(boost::asio::io_context& io_context)
-    : socket_(io_context) 
+  tcp_connection::tcp_connection(boost::asio::io_context& io_context, std::vector<std::string> &logins)
+    : socket_(io_context), logins_(logins)
   {}
 
   void tcp_connection::read() {
@@ -67,18 +67,32 @@ boost::asio::async_write(socket_, boost::asio::buffer(response),
   void tcp_connection::handle_reg(boost::json::object& data) {
 
     serializer serializer;
-    
-    if(data["login"] == "yasya" )  {
-      response_ = serializer.make_response(Status::OK, Success_messages::success_reg);
-      nickname_ = data["login"].as_string();
-      
+    std::string login = data["login"].as_string().c_str();
+
+    for(const std::string &l  : logins_) {
+      if (l == login ) {
+        response_ = serializer.make_response(Status::ERROR, Error_messages::error_reg);
+        write(response_);
+        return;
+      }
     }
-    else 
-      response_ = serializer.make_response(Status::ERROR, Error_messages::error_reg);
+    logins_.push_back(login);
+    login_ = data["login"].as_string();
+    password_ = data["password"].as_string();
+    response_ = serializer.make_response(Status::OK, Success_messages::success_reg);
+    write(response_);
+    
+    // if(data["login"] == "yasya" )  {
+    //   response_ = serializer.make_response(Status::OK, Success_messages::success_reg);
+    //   nickname_ = data["login"].as_string();
+    //   password_ = data["password"].as_string();
+      
+    // }
+    // else 
+    //   response_ = serializer.make_response(Status::ERROR, Error_messages::error_reg);
   //   std::memcpy(buf_.data(), response.data(), response.size());
   
   // buf_[response.size()] = '\0';
-  write(response_);
     }
 
 void tcp_connection::handle_auth(boost::json::object& data) {
@@ -94,7 +108,7 @@ void tcp_connection::handle_auth(boost::json::object& data) {
 
 void tcp_connection::handle_send(boost::json::object& data) {
   serializer serializer;
-  if (nickname_.size() == 0 )  {
+  if (login_.size() == 0 )  {
     response_ = serializer.make_response(Status::ERROR, Error_messages::error_send_anonym);
     // std::memcpy(buf_.data(), response.data(), response.size());
 

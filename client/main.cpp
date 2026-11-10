@@ -5,6 +5,7 @@
 #include <string>
 #include "../shared/const.hpp"
 #include "client.hpp"
+#include "auth_service.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -28,7 +29,8 @@ int main(int argc, char* argv[])
     // tcp::socket socket(io_context);
     // boost::asio::connect(socket, endpoints);
     // serializer serializer;
-    client client(io_context, endpoints);
+    client client_(io_context, endpoints);
+    auth_service auth(client_);
 
     std::cout << "1 - регистрация " << std::endl << "2 - залогиниться" << std::endl;
     std::string action;
@@ -44,7 +46,7 @@ int main(int argc, char* argv[])
     std::cout << "введите пароль" << std::endl;
     std::string password;
     std::cin >> password;
-    boost::json::object response = client.regauth(login, password, action == "1" ? Event::reg : Event::auth);
+    boost::json::object response = auth.regauth(login, password, action == "1" ? Event::reg : Event::auth);
 
   }
   catch (std::exception& e)

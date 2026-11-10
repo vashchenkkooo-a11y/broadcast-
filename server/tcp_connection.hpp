@@ -10,13 +10,13 @@ class tcp_connection
 {
 public:
   typedef std::shared_ptr<tcp_connection> pointer;
-  static pointer create(boost::asio::io_context& io_context);
+  static pointer create(boost::asio::io_context& io_context,  std::vector<std::string> &logins);
   tcp::socket& socket();
   void start();
   void write(const std::string& response);
 
 private:
-  tcp_connection(boost::asio::io_context& io_context);
+  tcp_connection(boost::asio::io_context& io_context, std::vector<std::string> &logins);
   void read();
   void handle_read(const boost::system::error_code& error,
      std::size_t bytes_transferred);
@@ -32,6 +32,8 @@ private:
   tcp::socket socket_;
   std::string message_;
   std::array<char, 512> buf_;
-  std::string nickname_;
+  std::string login_;
+  std::string password_;
   std::string response_; 
+  std::vector<std::string> &logins_;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/asio.hpp> 
 #include "tcp_connection.hpp"
-
+#include <vector>
 
 class tcp_server
 {
@@ -16,5 +16,7 @@ private:
 
   boost::asio::io_context& io_context_;
   tcp::acceptor acceptor_;
+  std::vector<std::string> logins_;
+
 };
 
