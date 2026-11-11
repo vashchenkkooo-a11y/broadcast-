@@ -12,7 +12,7 @@ public:
 private:
     tcp::socket socket_;
     void handle_write(const boost::system::error_code& error, size_t bytes_transferred);
-    std::string read();
+    void read();
     void handle_read(const boost::system::error_code& error,
      std::size_t bytes_transferred);
      std::array<char, 512> buf_;

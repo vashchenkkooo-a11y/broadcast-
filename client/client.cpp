@@ -30,12 +30,12 @@ void client::handle_write(const boost::system::error_code& error, size_t bytes_t
     read();
 }
 
-std::string client::read() {
+void client::read() {
     socket_.async_read_some(boost::asio::buffer(buf_),
                     boost::bind(&client::handle_read, this,
                     boost::asio::placeholders::error,
                     boost::asio::placeholders::bytes_transferred));
-    return std::string(buf_.data());
+
 }
 
 void client::handle_read(const boost::system::error_code& error,

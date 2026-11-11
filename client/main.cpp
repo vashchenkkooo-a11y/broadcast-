@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
       std::cout << "введите пароль" << std::endl;
       std::string password;
       std::cin >> password;
-      boost::json::object response = auth.regauth(login, password, action == "1" ? Event::reg : Event::auth);
+      auth.regauth(login, password, action == "1" ? Event::reg : Event::auth);
     }
   }
   catch (std::exception &e)
