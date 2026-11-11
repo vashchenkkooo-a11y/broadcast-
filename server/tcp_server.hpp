@@ -17,6 +17,7 @@ private:
   boost::asio::io_context& io_context_;
   tcp::acceptor acceptor_;
   std::vector<std::string> logins_;
-
+  std::map<std::string, tcp_connection::pointer> active_connections_;
+  std::map<std::string, std::string> data_; //заменить на деф, тут логин и пароль
 };
 

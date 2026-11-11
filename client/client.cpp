@@ -2,11 +2,15 @@
 //только сеть
 
 using boost::asio::ip::tcp;
-client::client(boost::asio::io_context &io_context, tcp::resolver::results_type &endpoints) : socket(io_context)
+client::client(boost::asio::io_context &io_context) 
+    : socket(io_context)
 {
-    boost::asio::connect(socket, endpoints);
+    // boost::asio::connect(socket, endpoints);
 }
 
+void client::connect(tcp::resolver::results_type& endpoints) {
+    boost::asio::connect(socket, endpoints);
+}
 
 void client::write(const std::string& request) {
     boost::system::error_code error;

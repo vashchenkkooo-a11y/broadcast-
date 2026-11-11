@@ -80,22 +80,15 @@ void tcp_connection::handle_reg(boost::json::object &data)
   std::string login = data["login"].as_string().c_str();
   std::string password = data["password"].as_string().c_str();
 
-  if (!data_.count(login))
+  if (data_.count(login))
   {
-    response_ = serializer.make_response(Status::ERROR, Error_messages::error_auth);
+    response_ = serializer.make_response(Status::ERROR, Error_messages::error_reg);
     write(response_);
     return;
   }
 
-  if (data_[login] != password)
-  {
-    response_ = serializer.make_response(Status::ERROR, Error_messages::error_auth);
-    write(response_);
-    return;
-  }
-  // если всё ок - запоминаем что авторизован
-  login_ = login;
-  response_ = serializer.make_response(Status::OK, Success_messages::success_auth);
+  data_[login] = password;
+  response_ = serializer.make_response(Status::OK, Success_messages::success_reg);
   write(response_);
 }
 
@@ -118,11 +111,11 @@ void tcp_connection::handle_auth(boost::json::object &data)
     write(response_);
     return;
   }
-  // если всё ок - запоминаем что авторизован
+ // если всё ок - запоминаем что авторизован
   login_ = login;
   response_ = serializer.make_response(Status::OK, Success_messages::success_auth);
   write(response_);
-
+}
   // for(const std::string &l  : logins_) {
   //   if (l == login ) {
   //     response_ = serializer.make_response(Status::ERROR, Error_messages::error_reg);
@@ -130,10 +123,7 @@ void tcp_connection::handle_auth(boost::json::object &data)
   //     return;
   //   }
 
-  response_ = serializer.make_response(Status::ERROR, Error_messages::error_auth);
-  write(response_);
-}
-
+  
 void tcp_connection::handle_send(boost::json::object &data)
 {
   serializer serializer;
