@@ -11,6 +11,9 @@ using boost::asio::ip::tcp;
 
 int main(int argc, char *argv[])
 {
+  boost::asio::io_context io_context;
+  std::thread *th = nullptr;
+
   try
   {
     if (argc != 2)
@@ -19,7 +22,6 @@ int main(int argc, char *argv[])
       return 1;
     }
 
-    boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
     tcp::resolver::results_type endpoints =
         resolver.resolve(argv[1], "4567");
@@ -30,20 +32,22 @@ int main(int argc, char *argv[])
     client client_(io_context);
     client_.connect(endpoints);
     auth_service auth(client_);
- 
+
     auto wg = boost::asio::make_work_guard(io_context);
-    auto th = std::make_unique<std::thread>([&](){io_context.run();});
+    th = new std::thread([&]()
+                         { io_context.run(); });
 
-       auth.start(); 
-       
-    if (th->joinable()) {
-      th->join();
-    }
-  } 
-    catch (std::exception &e)
-    {
-      std::cerr << e.what() << std::endl;
-    }
-
-    return 0;
+    auth.start();
   }
+  catch (std::exception &e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+  io_context.stop();
+  if (th->joinable())
+  {
+    th->join();
+  }
+  delete th;
+  return 0;
+}

@@ -7,54 +7,56 @@ auth_service::auth_service(client &client) : client_(client) {}
 
 void auth_service::start()
 {
-    while (true)
-    {
-        handle_menu();
-    }
+
+    handle_menu();
 }
 
 void auth_service::handle_menu()
 { // в отдельный поток
-    std::cout << "1 - Register " << std::endl
-              << "2 - Log in" << std::endl
-              << "3 - Send a message" << std::endl
-              << "4 - Logout " << std::endl;
-
-    std::string action;
-    std::cin >> action;
-
-    if (action == "1" || action == "2")
+    while (true)
     {
-        std::cout << "Enter your login" << std::endl;
-        std::string login;
-        std::cin >> login;
-        std::cout << "Enter your password" << std::endl;
-        std::string password;
-        std::cin >> password;
+        std::cout << "1 - Register " << std::endl
+                  << "2 - Log in" << std::endl
+                  << "3 - Send a message" << std::endl
+                  << "4 - Logout " << std::endl;
 
-        std::string request = serializer_.make_regauth_request(login, password, action == "1" ? Event::reg : Event::auth);
+        std::string action;
+        std::cin >> action;
 
-        client_.write(request);
-    }
-    else if (action == "3")
-    {
-        std::cout << "Enter the recipient's username" << std::endl;
-        std::string nickname;
-        std::cin >> nickname;
-        std::cout << "Enter your message" << std::endl;
-        std::string message;
-        std::cin.ignore();
-        std::getline(std::cin, message);
+        if (action == "1" || action == "2")
+        {
+            std::cout << "Enter your login" << std::endl;
+            std::string login;
+            std::cin >> login;
+            std::cout << "Enter your password" << std::endl;
+            std::string password;
+            std::cin >> password;
 
-        client_.write(serializer_.make_send_request(nickname, message));
-    }
-    else if (action == "4")
-    {
-        client_.write(serializer_.make_logout_request());
-    }
+            std::string request = serializer_.make_regauth_request(login, password, action == "1" ? Event::reg : Event::auth);
 
-    else
-    {
-        std::cout << "Unknown command" << std::endl;
+            client_.write(request);
+        }
+        else if (action == "3")
+        {
+            std::cout << "Enter the recipient's username" << std::endl;
+            std::string nickname;
+            std::cin >> nickname;
+            std::cout << "Enter your message" << std::endl;
+            std::string message;
+            std::cin.ignore();
+            std::getline(std::cin, message);
+
+            client_.write(serializer_.make_send_request(nickname, message));
+        }
+        else if (action == "4")
+        {
+            client_.write(serializer_.make_logout_request());
+            break;
+        }
+
+        else
+        {
+            std::cout << "Unknown command" << std::endl;
+        }
     }
 }
