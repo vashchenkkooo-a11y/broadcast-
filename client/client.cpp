@@ -19,7 +19,8 @@ void client::connect(tcp::resolver::results_type& endpoints) { //асинх
     
 void client::write(const std::string &request) {
     boost::system::error_code error;
-    boost::asio::async_write(socket_, boost::asio::buffer(request),
+    auto buf = std::make_shared<std::string>(request);
+    boost::asio::async_write(socket_, boost::asio::buffer(*buf),
                            boost::bind(&client::handle_write, this,
                                        boost::asio::placeholders::error,
                                        boost::asio::placeholders::bytes_transferred));
