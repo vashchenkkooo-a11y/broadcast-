@@ -2,11 +2,14 @@
 #include <boost/json.hpp>
 #include "client.hpp"
 #include "../shared/parser.hpp"
+#include "serializer.hpp"
 
 class auth_service {
 public:
-    void regauth(std::string &login, std::string &password, const std::string &event);
     auth_service(client &client);
-    private:
-    client &client_; 
+    void start();
+private:
+    client &client_;
+    serializer serializer_; 
+    void handle_menu();
 };

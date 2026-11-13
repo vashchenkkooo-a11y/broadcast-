@@ -11,13 +11,13 @@ class tcp_connection
 {
 public:
   typedef std::shared_ptr<tcp_connection> pointer;
-  static pointer create(boost::asio::io_context& io_context, std::map<std::string, std::string> &data_);
+  static pointer create(boost::asio::io_context& io_context, std::map<std::string, std::string> &data_, std::map<std::string, tcp_connection::pointer> &active_connections_);
   tcp::socket& socket();
   void start();
   void write(const std::string& response);
 
 private:
-  tcp_connection(boost::asio::io_context& io_context, std::map<std::string, std::string> &data_);
+  tcp_connection(boost::asio::io_context& io_context, std::map<std::string, std::string> &data_, std::map<std::string, tcp_connection::pointer> &active_connections_);
   void read();
   void handle_read(const boost::system::error_code& error,
      std::size_t bytes_transferred);
@@ -36,5 +36,6 @@ private:
   std::map<std::string, std::string> &data_;
   std::string response_; 
   std::string login_;
+  std::map<std::string, tcp_connection::pointer> &active_connections_;
 
 };

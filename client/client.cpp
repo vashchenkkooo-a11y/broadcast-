@@ -1,7 +1,8 @@
 #include "client.hpp"
 #include <boost/bind/bind.hpp>
 #include <iostream>
-//только сеть
+#include "../shared/parser.hpp"
+
 
 using boost::asio::ip::tcp;
 client::client(boost::asio::io_context &io_context) 
@@ -10,7 +11,7 @@ client::client(boost::asio::io_context &io_context)
     // boost::asio::connect(socket, endpoints);
 }
 
-void client::connect(tcp::resolver::results_type& endpoints) {
+void client::connect(tcp::resolver::results_type& endpoints) { //асинх
     boost::asio::connect(socket_, endpoints);
 }
 
@@ -41,4 +42,10 @@ void client::read() {
 void client::handle_read(const boost::system::error_code& error,
      std::size_t bytes_transferred) {
     if (error) throw boost::system::system_error(error);
+
+    parser parser_;
+    boost::json::object obj = parser_.parse(std::string(buf_.data(), bytes_transferred));
+    std::cout << obj["message"].as_string().c_str() << std::endl;
+    
+    read();
 }

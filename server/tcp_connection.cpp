@@ -10,9 +10,9 @@ void tcp_connection::start()
   read();
 }
 
-tcp_connection::pointer tcp_connection::create(boost::asio::io_context &io_context, std::map<std::string, std::string> &data)
+tcp_connection::pointer tcp_connection::create(boost::asio::io_context &io_context, std::map<std::string, std::string> &data, std::map<std::string, tcp_connection::pointer> &active_connections)
 {
-  return pointer(new tcp_connection(io_context, data));
+  return pointer(new tcp_connection(io_context, data, active_connections));
 }
 tcp::socket &tcp_connection::socket()
 {
@@ -27,8 +27,8 @@ void tcp_connection::write(const std::string &response)
                                        boost::asio::placeholders::bytes_transferred));
 }
 
-tcp_connection::tcp_connection(boost::asio::io_context &io_context, std::map<std::string, std::string> &data)
-    : socket_(io_context), data_(data)
+tcp_connection::tcp_connection(boost::asio::io_context &io_context, std::map<std::string, std::string> &data, std::map<std::string, tcp_connection::pointer> &active_connections)
+    : socket_(io_context), data_(data), active_connections_(active_connections)
 {
 }
 
@@ -42,12 +42,15 @@ void tcp_connection::read()
 
 void tcp_connection::handle_read(const boost::system::error_code &error, std::size_t bytes_transferred)
 {
-  if (error)
-    return;
+  if (error) {
+    if (!login_.empty()) active_connections_.erase(login_);
+  return;
+  }
   // buf_[bytes_transferred] = '\0';
+ 
   parser parser;
   boost::json::object obj_request;
-  obj_request = parser.parse(buf_.data());
+  obj_request = parser.parse(std::string(buf_.data(), bytes_transferred));
 
   boost::json::string event = obj_request["event"].as_string();
   boost::json::object data = obj_request["data"].as_object();
@@ -67,9 +70,13 @@ void tcp_connection::handle_read(const boost::system::error_code &error, std::si
     handle_send(data);
   }
 }
-void tcp_connection::handle_write(const boost::system::error_code & /*error*/,
-                                  size_t /*bytes_transferred*/)
+void tcp_connection::handle_write(const boost::system::error_code & error,
+                                  size_t bytes_transferred)
 {
+  if (error) {
+    if (!login_.empty()) active_connections_.erase(login_);
+    return;
+    }
   read();
 }
 
@@ -112,7 +119,8 @@ void tcp_connection::handle_auth(boost::json::object &data)
     return;
   }
  // если всё ок - запоминаем что авторизован
-  login_ = login;
+  login_ = login; //чтобі потом писать  Миша: привет + знать, что чел которій хочет ОТПРАВИТЬ смс авториз уже
+  active_connections_[login_] = shared_from_this();
   response_ = serializer.make_response(Status::OK, Success_messages::success_auth);
   write(response_);
 }
@@ -125,15 +133,26 @@ void tcp_connection::handle_auth(boost::json::object &data)
 
   
 void tcp_connection::handle_send(boost::json::object &data)
-{
+{ 
   serializer serializer;
-  if (login_.size() == 0)
-  {
+  if(login_.empty()) {
     response_ = serializer.make_response(Status::ERROR, Error_messages::error_send_anonym);
-    // std::memcpy(buf_.data(), response.data(), response.size());
-
-    // buf_[response.size()] = '\0';
-    // write(response.size());
     write(response_);
+    return;
   }
+
+  std::string nickname = data["nickname"].as_string().c_str();
+  std::string message = data["message"].as_string().c_str();
+  
+  if(!active_connections_.count(nickname)) {
+    response_ = serializer.make_response(Status::ERROR, Error_messages::error_send);
+    write(response_);
+    return;
+  }
+
+  std::string send =  serializer.make_response(Status::OK, login_ + ":" + message);
+  active_connections_[nickname]->write(send);
+
+  response_ = serializer.make_response(Status::OK, Success_messages::success_send);
+  write(response_);
 }

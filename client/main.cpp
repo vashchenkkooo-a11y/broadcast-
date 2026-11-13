@@ -30,32 +30,20 @@ int main(int argc, char *argv[])
     client client_(io_context);
     client_.connect(endpoints);
     auth_service auth(client_);
+ 
+    auto wg = boost::asio::make_work_guard(io_context);
+    auto th = std::make_unique<std::thread>([&](){io_context.run();});
 
-    while (true)
-    {
-      std::cout << "1 - регистрация " << std::endl
-                << "2 - залогиниться" << std::endl;
-      std::string action;
-      std::cin >> action;
-
-      if (action != "1" && action != "2")
-      {
-        return 1;
-      }
-
-      std::cout << "введите логин" << std::endl;
-      std::string login;
-      std::cin >> login;
-      std::cout << "введите пароль" << std::endl;
-      std::string password;
-      std::cin >> password;
-      auth.regauth(login, password, action == "1" ? Event::reg : Event::auth);
+       auth.start(); 
+       
+    if (th->joinable()) {
+      th->join();
     }
-  }
-  catch (std::exception &e)
-  {
-    std::cerr << e.what() << std::endl;
-  }
+  } 
+    catch (std::exception &e)
+    {
+      std::cerr << e.what() << std::endl;
+    }
 
-  return 0;
-}
+    return 0;
+  }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/json.hpp>
+#include "../shared/const.hpp"
 
 using boost::asio::ip::tcp;
 
@@ -15,5 +16,17 @@ std::string serializer::make_regauth_request(std::string login, std::string pass
     obj["password"] = password;
     obj1["data"] = obj; 
     std::string s = boost::json::serialize(obj1); //json text
+    return s;
+}
+
+std::string serializer::make_send_request(std::string nickname, std::string message) {
+        boost::json::object obj;
+    boost::json::object data;
+
+    obj["event"] = Event::send;
+    data["nickname"] = nickname;
+    data["message"] = message;
+    obj["data"] = data;
+    std::string s  = boost::json::serialize(obj);
     return s;
 }
