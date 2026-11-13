@@ -30,3 +30,11 @@ std::string serializer::make_send_request(std::string nickname, std::string mess
     std::string s  = boost::json::serialize(obj);
     return s;
 }
+
+std::string serializer::make_logout_request() {
+    boost::json::object obj;
+    obj["event"] = Event::logout;
+    obj["data"] = boost::json::object{};
+    std::string s = boost::json::serialize(obj);
+    return s;
+}

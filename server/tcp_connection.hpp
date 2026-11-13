@@ -27,8 +27,8 @@ private:
   
   void handle_reg(boost::json::object& data);
   void handle_auth(boost::json::object& data);
-
   void handle_send(boost::json::object& data);
+  void handle_logout();
 
   tcp::socket socket_;
   std::string message_;

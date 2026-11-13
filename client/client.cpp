@@ -11,16 +11,20 @@ client::client(boost::asio::io_context &io_context)
     // boost::asio::connect(socket, endpoints);
 }
 
-void client::connect(tcp::resolver::results_type& endpoints) { //асинх
-    boost::asio::connect(socket_, endpoints);
+void client::connect(tcp::resolver::results_type& endpoints) {
+    boost::asio::async_connect(socket_, endpoints,
+        boost::bind(&client::handle_connect, this,
+            boost::asio::placeholders::error));
 }
 
-
+void client::handle_connect(const boost::system::error_code& error) {
+    if (error) throw boost::system::system_error(error);
+    read();
+}
     
 void client::write(const std::string &request) {
     boost::system::error_code error;
-    auto buf = std::make_shared<std::string>(request);
-    boost::asio::async_write(socket_, boost::asio::buffer(*buf),
+    boost::asio::async_write(socket_, boost::asio::buffer(request),
                            boost::bind(&client::handle_write, this,
                                        boost::asio::placeholders::error,
                                        boost::asio::placeholders::bytes_transferred));
@@ -29,8 +33,8 @@ void client::write(const std::string &request) {
 void client::handle_write(const boost::system::error_code& error, size_t bytes_transferred) 
 {   
     if (error) throw boost::system::system_error(error);
-    read();
 }
+
 
 void client::read() {
     socket_.async_read_some(boost::asio::buffer(buf_),
@@ -39,6 +43,7 @@ void client::read() {
                     boost::asio::placeholders::bytes_transferred));
 
 }
+
 
 void client::handle_read(const boost::system::error_code& error,
      std::size_t bytes_transferred) {

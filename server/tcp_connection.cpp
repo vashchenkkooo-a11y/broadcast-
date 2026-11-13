@@ -69,6 +69,11 @@ void tcp_connection::handle_read(const boost::system::error_code &error, std::si
   {
     handle_send(data);
   }
+
+  else if (event == Event::logout)
+  {
+    handle_logout();
+  }
 }
 void tcp_connection::handle_write(const boost::system::error_code & error,
                                   size_t bytes_transferred)
@@ -153,6 +158,20 @@ void tcp_connection::handle_send(boost::json::object &data)
   std::string send =  serializer.make_response(Status::OK, login_ + ":" + message);
   active_connections_[nickname]->write(send);
 
-  response_ = serializer.make_response(Status::OK, Success_messages::success_send);
-  write(response_);
+  write(serializer.make_response(Status::OK, Success_messages::success_send));
+
+}
+
+void tcp_connection::handle_logout()
+{
+    serializer serializer;
+    if (login_.empty()) {
+        response_ = serializer.make_response(Status::ERROR, Error_messages::error_logout);
+        write(response_);
+        return;
+    }
+    active_connections_.erase(login_);
+    login_.clear();
+    response_ = serializer.make_response(Status::OK, Success_messages::success_logout);
+    write(response_);
 }

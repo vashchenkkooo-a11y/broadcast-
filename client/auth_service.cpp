@@ -7,14 +7,18 @@ auth_service::auth_service(client &client) : client_(client) {}
 
 void auth_service::start()
 {
-    handle_menu();
+    while (true)
+    {
+        handle_menu();
+    }
 }
 
 void auth_service::handle_menu()
 { // в отдельный поток
     std::cout << "1 - Register " << std::endl
               << "2 - Log in" << std::endl
-              << "3 - Send a message" << std::endl;
+              << "3 - Send a message" << std::endl
+              << "4 - Logout " << std::endl;
 
     std::string action;
     std::cin >> action;
@@ -31,7 +35,6 @@ void auth_service::handle_menu()
         std::string request = serializer_.make_regauth_request(login, password, action == "1" ? Event::reg : Event::auth);
 
         client_.write(request);
-        start();
     }
     else if (action == "3")
     {
@@ -40,24 +43,18 @@ void auth_service::handle_menu()
         std::cin >> nickname;
         std::cout << "Enter your message" << std::endl;
         std::string message;
-        std::cin >> message;
+        std::cin.ignore();
+        std::getline(std::cin, message);
 
         client_.write(serializer_.make_send_request(nickname, message));
-        start();
     }
+    else if (action == "4")
+    {
+        client_.write(serializer_.make_logout_request());
+    }
+
     else
     {
         std::cout << "Unknown command" << std::endl;
-        start();
     }
 }
-// void auth_service::regauth( std::string &login,
-//     std::string &password,
-//     const std::string &event)
-// {
-//     serializer serializer;
-//     std::string request =
-//         serializer.make_regauth_request(login, password, event);
-
-//     client_.write(request);
-// }

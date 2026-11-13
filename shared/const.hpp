@@ -10,6 +10,7 @@ namespace Success_messages {
   inline const std::string success_reg = "User registered";
   inline const std::string success_auth = "Login successful";
   inline const std::string success_send = "Message sent";
+  inline const std::string success_logout = "Logged out";
 }
 
 namespace Error_messages {
@@ -17,10 +18,12 @@ namespace Error_messages {
   inline const std::string error_auth = "Invalid username or password";
   inline const std::string error_send = "Recipient not found";
   inline const std::string error_send_anonym = "LOG IN!";
+  inline const std::string error_logout = "Not logged in";
 }
 
 namespace Event {
   inline const std::string reg = "reg";
   inline const std::string auth = "auth";
   inline const std::string send = "send";
+  inline const std::string logout = "logout";
 }
