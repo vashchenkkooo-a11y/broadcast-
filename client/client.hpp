@@ -16,6 +16,11 @@ private:
     void handle_read(const boost::system::error_code &error,
                      std::size_t bytes_transferred);
     void handle_connect(const boost::system::error_code &error);
-    
+    void reconnect();
+    void handle_reconnect(const boost::system::error_code& ec);
+
     std::array<char, 512> buf_;
+    boost::asio::io_context& io_context_;  
+    boost::asio::steady_timer reconnect_timer_; 
+    tcp::resolver::results_type endpoints_;
 };
